@@ -1,11 +1,16 @@
 const express = require('express');
 const router = express.Router();
 const courseController = require('../controllers/courseController');
+const { authenticate, authorizeTeacher } = require('../middleware/authMiddleware');
 
-router.post('/', courseController.createCourse);
+// Public: Get all courses or a single course
 router.get('/', courseController.getCourses);
 router.get('/:id', courseController.getCourseById);
-router.put('/:id', courseController.updateCourse);
-router.delete('/:id', courseController.deleteCourse);
+
+// Protected: Only teachers can create, update, or delete courses
+router.post('/', authenticate, authorizeTeacher, courseController.createCourse);
+router.put('/:id', authenticate, authorizeTeacher, courseController.updateCourse);
+router.delete('/:id', authenticate, authorizeTeacher, courseController.deleteCourse);
 
 module.exports = router;
+
