@@ -8,8 +8,26 @@ const { authenticate, authorizeTeacher } = require('./middleware/authMiddleware'
 
 const app = express();
 
-// Middleware setup
-app.use(cors());
+
+const allowedOrigins = ['https://dellis2301.github.io', 'http://localhost:3000'];
+
+
+app.use(cors({
+  origin: function (origin, callback) {
+    // Allow requests with no origin (like Postman or localhost testing)
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true); // Allow the origin
+    } else {
+      console.error(`Blocked by CORS: ${origin}`);
+      callback(new Error('CORS not allowed from this origin: ' + origin));
+    }
+  },
+  methods: ['GET', 'POST', 'PUT', 'DELETE'], // You can specify allowed HTTP methods here
+  allowedHeaders: ['Content-Type', 'Authorization'], // You can specify allowed headers
+  credentials: true  // Allow cookies or credentials (useful for JWT authentication)
+}));
+
+
 app.use(express.json()); // Parse incoming JSON requests
 
 // Home route
