@@ -1,11 +1,13 @@
 const mongoose = require('mongoose');
 
+// Define the schema for the course model
 const courseSchema = new mongoose.Schema({
-  title: { type: String, required: true },
-  description: String,
-  subject: String,
-  credits: { type: Number, min: 0 },
-  teacher: String,
+  name: { type: String, required: true },  
+  description: { type: String }, 
+  subjectArea: { type: String }, 
+  credits: { type: Number, min: 0 }, 
+  teacher: { type: String }, 
 });
 
+// Export the model to use it in other parts of the app
 module.exports = mongoose.model('Course', courseSchema);
