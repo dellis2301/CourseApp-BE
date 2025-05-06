@@ -15,4 +15,3 @@ router.delete('/:id', authenticate, authorizeTeacher, courseController.deleteCou
 
 module.exports = router;
 
-

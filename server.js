@@ -8,9 +8,7 @@ const { authenticate, authorizeTeacher } = require('./middleware/authMiddleware'
 
 const app = express();
 
-
 const allowedOrigins = ['https://dellis2301.github.io', 'http://localhost:3000'];
-
 
 app.use(cors({
   origin: function (origin, callback) {
@@ -26,7 +24,6 @@ app.use(cors({
   allowedHeaders: ['Content-Type', 'Authorization'], // You can specify allowed headers
   credentials: true  // Allow cookies or credentials (useful for JWT authentication)
 }));
-
 
 app.use(express.json()); // Parse incoming JSON requests
 
