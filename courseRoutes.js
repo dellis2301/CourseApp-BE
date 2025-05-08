@@ -11,6 +11,9 @@ router.get('/:id', courseController.getCourseById);
 router.post('/', authenticate, authorizeTeacher, courseController.createCourse);
 router.put('/:id', authenticate, authorizeTeacher, courseController.updateCourse);
 router.delete('/:id', authenticate, authorizeTeacher, courseController.deleteCourse);
+router.get('/my-courses', authenticate, courseController.getMyCourses);
+router.post('/checkout', authenticate, courseController.checkoutCart);
+
 
 
 module.exports = router;

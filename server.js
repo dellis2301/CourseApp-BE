@@ -1,52 +1,59 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
-require('dotenv').config(); // Load environment variables
-const authRoutes = require('./routes/authRoutes'); // Import auth routes for login & registration
-const courseRoutes = require('./routes/courseRoutes'); // Import course routes for CRUD operations
-const { authenticate, authorizeTeacher } = require('./middleware/authMiddleware'); // Import middleware for auth
+require('dotenv').config();
+
+const authRoutes = require('./routes/authRoutes');
+const courseRoutes = require('./routes/courseRoutes');
+//const studentRoutes = require('./routes/studentRoutes'); 
+const { authenticate, authorizeTeacher, authorizeStudent } = require('./middleware/authMiddleware');
+
 
 const app = express();
 
+// Allowed frontend origins
 const allowedOrigins = ['https://dellis2301.github.io', 'http://localhost:3000'];
 
 app.use(cors({
   origin: function (origin, callback) {
-    // Allow requests with no origin (like Postman or localhost testing)
     if (!origin || allowedOrigins.includes(origin)) {
-      callback(null, true); // Allow the origin
+      callback(null, true);
     } else {
       console.error(`Blocked by CORS: ${origin}`);
       callback(new Error('CORS not allowed from this origin: ' + origin));
     }
   },
-  methods: ['GET', 'POST', 'PUT', 'DELETE'], // You can specify allowed HTTP methods here
-  allowedHeaders: ['Content-Type', 'Authorization'], // You can specify allowed headers
-  credentials: true  // Allow cookies or credentials (useful for JWT authentication)
+  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+  credentials: true
 }));
 
-app.use(express.json()); // Parse incoming JSON requests
+app.use(express.json()); // Parse incoming JSON
 
 // Home route
 app.get('/', (req, res) => {
   res.send('Course API is running!');
 });
 
-// Connect to MongoDB
+// MongoDB connection
 mongoose.connect(process.env.MONGODB_URI, {
   useNewUrlParser: true,
   useUnifiedTopology: true
 })
   .then(() => console.log('MongoDB Connected'))
-  .catch(err => console.log('Error connecting to MongoDB:', err));
+  .catch(err => console.log('MongoDB connection error:', err));
 
-// Use authentication routes for login/register
-app.use('/api/auth', authRoutes);  // Authentication routes
+// PUBLIC routes (no auth)
+app.use('/api/auth', authRoutes); // e.g., /api/auth/register, /api/auth/login
 
-// Use course routes, with authentication and authorization middleware
-app.use('/api/courses', authenticate, authorizeTeacher, courseRoutes);  // Only teachers can create/edit/delete courses
 
-// Error handling middleware
+app.use('/api/courses', courseRoutes);
+
+
+// PROTECTED student-only routes (optional, for Stage 2)
+//app.use('/api/student', authenticate, authorizeStudent, studentRoutes);
+
+// Generic error handler
 app.use((err, req, res, next) => {
   console.error(err.stack);
   res.status(500).json({ message: 'Something went wrong!' });
@@ -56,8 +63,9 @@ app.use((err, req, res, next) => {
 const PORT = process.env.PORT || 5000;
 if (process.env.NODE_ENV !== 'test') {
   app.listen(PORT, () => {
-    console.log(`Server is running on port ${PORT}`);
+    console.log(`Server running on port ${PORT}`);
   });
 }
 
 module.exports = app;
+
