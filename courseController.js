@@ -1,26 +1,5 @@
 const Course = require('../models/Course');
 const User = require('../models/User'); 
-const mongoose = require('mongoose');
-
-exports.getMyCourses = async (req, res) => {
-    try {
-        // Assuming you are storing the user ID in req.user (after authentication middleware)
-        const userId = req.user.id;
-
-        // Fetch courses where the user is enrolled (adjust the query as needed)
-        const courses = await Course.find({ enrolledStudents: userId });
-
-        if (!courses) {
-            return res.status(404).json({ message: "No courses found for this user." });
-        }
-
-        res.status(200).json(courses);
-    } catch (error) {
-        console.error(error);
-        res.status(500).json({ message: "Server error" });
-    }
-};
-
 
 
 // Create a course (only by authenticated teacher)
@@ -47,25 +26,16 @@ const getCourses = async (req, res) => {
   }
 };
 
+// Get a single course by ID (public)
 const getCourseById = async (req, res) => {
   try {
-    const courseId = req.params.id;
-    console.log('Fetching course by ID:', courseId);
-
-    const course = await Course.findById(courseId);
-
-    if (!course) {
-      console.log('Course not found with ID:', courseId);
-      return res.status(404).json({ message: 'Course not found' });
-    }
-
+    const course = await Course.findById(req.params.id);
+    if (!course) return res.status(404).json({ message: 'Course not found' });
     res.json(course);
   } catch (err) {
-    console.error('Error fetching course by ID:', err.message);
     res.status(500).json({ message: 'Error fetching course' });
   }
 };
-
 
 // Update a course (only by authenticated teacher)
 const updateCourse = async (req, res) => {
@@ -106,11 +76,10 @@ const deleteCourse = async (req, res) => {
 };
 
 // Get courses for the current user
-
 const getMyCourses = async (req, res) => {
   try {
     const user = req.user; // User from the decoded token
-    console.log("Authenticated User:", user); // Log user data to verify token is being decoded
+    console.log("Authenticated User:", user); // Log the user object for debugging
 
     if (!user) {
       return res.status(401).json({ message: 'User not authenticated' });
@@ -131,10 +100,10 @@ const getMyCourses = async (req, res) => {
       return res.status(404).json({ message: 'No courses found' });
     }
 
-    console.log("Courses fetched:", courses);
+    console.log("Courses fetched:", courses); // Log the courses fetched
     res.status(200).json(courses);
   } catch (error) {
-    console.error('Error fetching courses:', error.message, error.stack);
+    console.error('Error fetching courses:', error.stack || error); // Log more details about the error
     res.status(500).json({ message: 'Server error retrieving courses' });
   }
 };

@@ -35,4 +35,3 @@ const authorizeTeacher = (req, res, next) => {
 };
 
 module.exports = { authenticate, authorizeTeacher };
-

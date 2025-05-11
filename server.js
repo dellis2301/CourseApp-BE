@@ -28,7 +28,12 @@ app.use(cors({
   credentials: true
 }));
 
+app.use(cors());
+
 app.use(express.json()); // Parse incoming JSON
+
+
+
 
 // Home route
 app.get('/', (req, res) => {
@@ -50,6 +55,9 @@ app.use('/api/auth', authRoutes); // e.g., /api/auth/register, /api/auth/login
 app.use('/api/courses', courseRoutes);
 
 
+
+
+
 // PROTECTED student-only routes (optional, for Stage 2)
 //app.use('/api/student', authenticate, authorizeStudent, studentRoutes);
 
@@ -68,4 +76,3 @@ if (process.env.NODE_ENV !== 'test') {
 }
 
 module.exports = app;
-
